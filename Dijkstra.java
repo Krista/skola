@@ -101,14 +101,6 @@ class Dijkstra {
         }
     }
 
-//    public static int zisti_cenu(Vrchol v, Vrchol u) {
-//        int suma= 0;
-//        for (Vrchol vertex = u; vertex != v; vertex = vertex.parent) {
-//            //suma += vertex.najkratsia_cesta;
-//            suma += matrix[v.id][vertex.id];
-//        }
-//        return suma;
-//    }
     public static void main(String[] args) {
         Dijkstra di = new Dijkstra();
         Scanner s = new Scanner(System.in);
