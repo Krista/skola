@@ -17,36 +17,36 @@ import java.util.Scanner;
  */
 class Dijkstra {
 
-    static int MAX = Integer.MAX_VALUE;
-    static int PLUS = 10000;
+    static double MAX = Double.POSITIVE_INFINITY;
+    static double PLUS = 200000000;
     static int n, m, q;
     static int[][] matrix;
-   // static ArrayList<Hrana> nutne;
+    // static ArrayList<Hrana> nutne;
     static Vrchol[] zoznam;
-   
+
     class Vrchol implements Comparable<Vrchol> {
 
         public Vrchol(int id) {
             this.id = id;
-            this.parent = this;
+            //        this.parent = this;
         }
-        Vrchol parent;
+        // Vrchol parent;
         int id;
-        int najkratsia_cesta = MAX;
+        double najkratsia_cesta = MAX;
         ArrayList<Hrana> susedia = new ArrayList<>();
         int pocet_n = 0;
         int cena_n = 0;
 
         @Override
         public int compareTo(Vrchol t1) {
-          return najkratsia_cesta - t1.najkratsia_cesta;
-              }
+            return Double.compare(najkratsia_cesta, t1.najkratsia_cesta);
+        }
     }
 
     class Hrana implements Comparator<Hrana> {
 
         public Hrana(Vrchol ciel, int price, boolean b) {
-          
+
             this.ciel = ciel;
             this.price = price;
             this.safety = b;
@@ -61,7 +61,6 @@ class Dijkstra {
         }
     }
 
-   
     private static void najdi_cestu(Vrchol zac, Vrchol b) {
 //        if (matrix[zac.id][b.id] != MAX) {
 //            return matrix[zac.id][b.id]; } else {
@@ -78,23 +77,23 @@ class Dijkstra {
                 Vrchol v = e.ciel;
                 int weight = e.price;
 
-               int vzd = u.najkratsia_cesta + weight;
-               //int vzd = matrix[zac.id][u.id] + weight;
+                double vzd = u.najkratsia_cesta + weight;
+                //int vzd = matrix[zac.id][u.id] + weight;
                 if (!e.safety) {
                     vzd += PLUS;
                 }
                 if (vzd < v.najkratsia_cesta) {
-                //if (vzd < matrix[zac.id][v.id]) {
-                   // matrix[zac.id][v.id] = vzd;
+                    //if (vzd < matrix[zac.id][v.id]) {
+                    // matrix[zac.id][v.id] = vzd;
                     v.najkratsia_cesta = vzd;
-                    v.parent = u;
-                  v.pocet_n = u.pocet_n;
-                   v.cena_n = u.cena_n;
+                    //    v.parent = u;
+                    v.pocet_n = u.pocet_n;
+                    v.cena_n = u.cena_n;
                     if (!e.safety) {
                         v.pocet_n++;
-                        v.cena_n+=e.price;
+                        v.cena_n += e.price;
                     }
-                   
+
                     vertexQueue.add(v);
                     vertexQueue.remove(u);
                 }
@@ -110,8 +109,6 @@ class Dijkstra {
 //        }
 //        return suma;
 //    }
-
-
     public static void main(String[] args) {
         Dijkstra di = new Dijkstra();
         Scanner s = new Scanner(System.in);
@@ -119,14 +116,13 @@ class Dijkstra {
         m = s.nextInt(); //pocet ciest
         q = s.nextInt(); //pocet queries
 
-        
         zoznam = new Vrchol[n];
         matrix = new int[n][n];
-       
+
         for (int i = 0; i < n; i++) {
             zoznam[i] = di.new Vrchol(i);
-           // Arrays.fill(matrix[i], MAX);
-           }
+            // Arrays.fill(matrix[i], MAX);
+        }
 
         int a, b, c;
         String x;
@@ -139,7 +135,7 @@ class Dijkstra {
             if (x.equals("B")) {
                 h1 = di.new Hrana(zoznam[b], c, true);
                 h2 = di.new Hrana(zoznam[a], c, true);
-               } else {
+            } else {
                 h1 = di.new Hrana(zoznam[b], c, false);
                 h2 = di.new Hrana(zoznam[a], c, false);
             }
@@ -151,26 +147,21 @@ class Dijkstra {
         for (int j = 0; j < q; j++) {
             a = s.nextInt();
             b = s.nextInt();
+            for (int w = 0; w < n; w++) {
+                zoznam[w].cena_n = 0;
+                zoznam[w].najkratsia_cesta = MAX;
+                zoznam[w].pocet_n = 0;
+            }
             najdi_cestu(zoznam[a], zoznam[b]);
-          if (zoznam[b].najkratsia_cesta == MAX) {
-         // if (matrix[a][b] == MAX){
+            if (zoznam[b].najkratsia_cesta == MAX) {
+                // if (matrix[a][b] == MAX){
                 System.out.println("-1 " + "-1");
             } else {
-              int nebe = zoznam[b].pocet_n;
-              //int cena = matrix[a][b] - 10000*nebe;
-              int cena = zoznam[b].najkratsia_cesta - 10000*nebe;
+                int nebe = zoznam[b].pocet_n;
+                //int cena = matrix[a][b] - 10000*nebe;
+                int cena = (int) (zoznam[b].najkratsia_cesta - PLUS * nebe);
                 System.out.println(zoznam[b].cena_n + " " + cena);
             }
         }
     }
 }
-/*3 3 3
-0 1 10 B
-1 2 20 N 
-2 0 5 N
-1 0
-0 10
-0 2
-5 5
-2 1
-0 0 nejde to */
