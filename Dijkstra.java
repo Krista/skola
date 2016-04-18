@@ -1,45 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package dijkstra;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
-/**
- *
- * @author krista
- */
 class Dijkstra {
 
-    static double MAX = Double.POSITIVE_INFINITY;
-    static double PLUS = 200000000;
+   static long MAX = Long.MAX_VALUE;
+   static long PLUS = (long) Math.pow(2.0, 32.0);
+
     static int n, m, q;
-    static int[][] matrix;
-    // static ArrayList<Hrana> nutne;
     static Vrchol[] zoznam;
 
     class Vrchol implements Comparable<Vrchol> {
 
         public Vrchol(int id) {
             this.id = id;
-            //        this.parent = this;
         }
-        // Vrchol parent;
         int id;
-        double najkratsia_cesta = MAX;
+        long najkratsia_cesta = MAX;
         ArrayList<Hrana> susedia = new ArrayList<>();
-        int pocet_n = 0;
-        int cena_n = 0;
 
         @Override
         public int compareTo(Vrchol t1) {
-            return Double.compare(najkratsia_cesta, t1.najkratsia_cesta);
+            return Long.compare(this.najkratsia_cesta,t1.najkratsia_cesta);
         }
     }
 
@@ -62,9 +47,6 @@ class Dijkstra {
     }
 
     private static void najdi_cestu(Vrchol zac, Vrchol b) {
-//        if (matrix[zac.id][b.id] != MAX) {
-//            return matrix[zac.id][b.id]; } else {
-        matrix[zac.id][zac.id] = 0;
         zac.najkratsia_cesta = 0;
         PriorityQueue<Vrchol> vertexQueue = new PriorityQueue<>();
         vertexQueue.add(zac);
@@ -75,25 +57,13 @@ class Dijkstra {
             // Visit each edge exiting u
             for (Hrana e : u.susedia) {
                 Vrchol v = e.ciel;
-                int weight = e.price;
-
-                double vzd = u.najkratsia_cesta + weight;
-                //int vzd = matrix[zac.id][u.id] + weight;
+                long weight = e.price;
                 if (!e.safety) {
-                    vzd += PLUS;
+                    weight <<= 32;
                 }
+                long vzd = u.najkratsia_cesta + weight;
                 if (vzd < v.najkratsia_cesta) {
-                    //if (vzd < matrix[zac.id][v.id]) {
-                    // matrix[zac.id][v.id] = vzd;
                     v.najkratsia_cesta = vzd;
-                    //    v.parent = u;
-                    v.pocet_n = u.pocet_n;
-                    v.cena_n = u.cena_n;
-                    if (!e.safety) {
-                        v.pocet_n++;
-                        v.cena_n += e.price;
-                    }
-
                     vertexQueue.add(v);
                     vertexQueue.remove(u);
                 }
@@ -109,11 +79,8 @@ class Dijkstra {
         q = s.nextInt(); //pocet queries
 
         zoznam = new Vrchol[n];
-        matrix = new int[n][n];
-
         for (int i = 0; i < n; i++) {
             zoznam[i] = di.new Vrchol(i);
-            // Arrays.fill(matrix[i], MAX);
         }
 
         int a, b, c;
@@ -140,19 +107,15 @@ class Dijkstra {
             a = s.nextInt();
             b = s.nextInt();
             for (int w = 0; w < n; w++) {
-                zoznam[w].cena_n = 0;
                 zoznam[w].najkratsia_cesta = MAX;
-                zoznam[w].pocet_n = 0;
             }
             najdi_cestu(zoznam[a], zoznam[b]);
             if (zoznam[b].najkratsia_cesta == MAX) {
-                // if (matrix[a][b] == MAX){
                 System.out.println("-1 " + "-1");
             } else {
-                int nebe = zoznam[b].pocet_n;
-                //int cena = matrix[a][b] - 10000*nebe;
-                int cena = (int) (zoznam[b].najkratsia_cesta - PLUS * nebe);
-                System.out.println(zoznam[b].cena_n + " " + cena);
+                long sa = zoznam[b].najkratsia_cesta % PLUS;
+                long ra = zoznam[b].najkratsia_cesta >> 32;
+                System.out.println( ra + " " +  (sa+ra));
             }
         }
     }
